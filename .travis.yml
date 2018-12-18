@@ -1,5 +1,7 @@
 language: node_js
 cache: yarn
+services:
+  - docker
 notifications:
   email: false
 node_js:
@@ -11,6 +13,8 @@ script:
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
+before_install:
+  - docker-compose up -d
 jobs:
   include:
     - stage: release
