@@ -16,6 +16,7 @@ export default class MssqlDbms extends BaseDbms {
   }
 
   listMigrations = async (tableName: string): Promise<Migration[]> => {
+    // tslint:disable-next-line
     if (!(await this.knex.schema.hasTable(tableName))) {
       await new Promise((resolve, reject) =>
         this.knex.schema
@@ -39,7 +40,7 @@ export default class MssqlDbms extends BaseDbms {
       up: string
       down: string
       checksum: string
-    }[] = (await this.knex
+    }[] = (await this.knex // tslint:disable-next-line
       .table(tableName)
       .select('id', 'name', 'up', 'down', 'checksum')) as any
     return migrations
@@ -53,11 +54,15 @@ export default class MssqlDbms extends BaseDbms {
     }
   ): Promise<void> => {
     await this.knex.transaction(async trx => {
+      // tslint:disable-next-line
       await trx.raw(migration.up)
       if (opts.checkEffects) {
+        // tslint:disable-next-line
         await trx.raw(migration.down)
+        // tslint:disable-next-line
         await trx.raw(migration.up)
       }
+      // tslint:disable-next-line
       await trx.table(tableName).insert(migration)
     })
   }
@@ -67,7 +72,9 @@ export default class MssqlDbms extends BaseDbms {
     migration: Migration
   ): Promise<void> => {
     await this.knex.transaction(async trx => {
+      // tslint:disable-next-line
       await trx.raw(migration.down)
+      // tslint:disable-next-line
       await trx
         .table(tableName)
         .where('id', migration.id)
