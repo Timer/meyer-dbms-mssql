@@ -78,22 +78,25 @@
     ]
   },
   "dependencies": {
-    "mssql": "^4.3.0"
+    "knex": "^0.16.2",
+    "mssql": "^5.0.0-alpha.1"
   },
   "peerDependencies": {
-    "meyer": "^1.1.0"
+    "meyer": "^1.1.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
+    "@types/bluebird": "^3.5.25",
     "@types/jest": "^23.3.2",
+    "@types/mssql": "^4.0.11",
     "@types/node": "^10.11.0",
     "commitizen": "^3.0.0",
     "cz-conventional-changelog": "^2.1.0",
     "husky": "^1.2.1",
     "jest": "^23.6.0",
     "jest-config": "^23.6.0",
-    "meyer": "^1.1.0",
+    "meyer": "^1.1.2",
     "prettier": "^1.14.3",
     "pretty-quick": "^1.8.0",
     "rimraf": "^2.6.2",
