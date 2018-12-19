@@ -6,7 +6,7 @@
   "sideEffects": false,
   "main": "dist/mssql.cjs.js",
   "module": "dist/mssql.es5.js",
-  "typings": "dist/types/mssql.d.ts",
+  "typings": "dist/types/index.d.ts",
   "files": [
     "dist"
   ],
