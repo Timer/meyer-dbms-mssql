@@ -1,7 +1,14 @@
 import { BaseDbms, Migration } from 'meyer'
 import Knex from 'knex'
+import Bluebird from 'bluebird'
 
 let KnexConfig: Knex.Config
+
+function asPromise<T>(x: Bluebird<T>) {
+  return new Promise<T>((resolve, reject) => {
+    x.then(resolve, reject)
+  })
+}
 
 export default class MssqlDbms extends BaseDbms {
   private knex: Knex
@@ -16,8 +23,7 @@ export default class MssqlDbms extends BaseDbms {
   }
 
   listMigrations = async (tableName: string): Promise<Migration[]> => {
-    // tslint:disable-next-line
-    if (!(await this.knex.schema.hasTable(tableName))) {
+    if (!(await asPromise(this.knex.schema.hasTable(tableName)))) {
       await new Promise((resolve, reject) =>
         this.knex.schema
           .createTable(tableName, table => {
@@ -40,9 +46,9 @@ export default class MssqlDbms extends BaseDbms {
       up: string
       down: string
       checksum: string
-    }[] = (await this.knex // tslint:disable-next-line
-      .table(tableName)
-      .select('id', 'name', 'up', 'down', 'checksum')) as any
+    }[] = await asPromise(
+      this.knex.table(tableName).select('id', 'name', 'up', 'down', 'checksum')
+    )
     return migrations
   }
 
@@ -53,32 +59,32 @@ export default class MssqlDbms extends BaseDbms {
       checkEffects?: boolean
     }
   ): Promise<void> => {
-    await this.knex.transaction(async trx => {
-      // tslint:disable-next-line
-      await trx.raw(migration.up)
-      if (opts.checkEffects) {
-        // tslint:disable-next-line
-        await trx.raw(migration.down)
-        // tslint:disable-next-line
-        await trx.raw(migration.up)
-      }
-      // tslint:disable-next-line
-      await trx.table(tableName).insert(migration)
-    })
+    await asPromise(
+      this.knex.transaction(async trx => {
+        await asPromise(trx.raw(migration.up))
+        if (opts.checkEffects) {
+          await asPromise(trx.raw(migration.down))
+          await asPromise(trx.raw(migration.up))
+        }
+        await asPromise(trx.table(tableName).insert(migration))
+      })
+    )
   }
 
   revertMigration = async (
     tableName: string,
     migration: Migration
   ): Promise<void> => {
-    await this.knex.transaction(async trx => {
-      // tslint:disable-next-line
-      await trx.raw(migration.down)
-      // tslint:disable-next-line
-      await trx
-        .table(tableName)
-        .where('id', migration.id)
-        .delete()
-    })
+    await asPromise(
+      this.knex.transaction(async trx => {
+        await asPromise(trx.raw(migration.down))
+        await asPromise(
+          trx
+            .table(tableName)
+            .where('id', migration.id)
+            .delete()
+        )
+      })
+    )
   }
 }
