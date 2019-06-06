@@ -40,15 +40,9 @@ export default class MssqlDbms extends BaseDbms {
       )
     }
 
-    const migrations: {
-      id: number
-      name: string
-      up: string
-      down: string
-      checksum: string
-    }[] = await asPromise(
+    const migrations: Migration[] = (await asPromise(
       this.knex.table(tableName).select('id', 'name', 'up', 'down', 'checksum')
-    )
+    )) as Migration[]
     return migrations
   }
 
