@@ -78,7 +78,7 @@
     ]
   },
   "dependencies": {
-    "knex": "^0.17.3",
+    "knex": "^0.19.5",
     "mssql": "^6.0.0-alpha.9"
   },
   "peerDependencies": {
