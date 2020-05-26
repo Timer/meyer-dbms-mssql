@@ -34,6 +34,7 @@ jobs:
       - name: Test
         run: |
           docker-compose up -d
+          sleep 3
           yarn test --ci --coverage --maxWorkers=2
           docker-compose down --volumes --remove-orphans
         env:
