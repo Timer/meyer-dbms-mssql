@@ -7,7 +7,6 @@ jobs:
     steps:
       - name: Begin CI...
         uses: actions/checkout@v2
-        run: docker-compose up -d
 
       - name: Use Node 12
         uses: actions/setup-node@v1
@@ -31,6 +30,9 @@ jobs:
         run: yarn lint
         env:
           CI: true
+
+      - name: Setup testing env ...
+        run: docker-compose up -d
 
       - name: Test
         run: yarn test --ci --coverage --maxWorkers=2
