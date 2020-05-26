@@ -60,4 +60,8 @@ export default class MssqlDbms extends BaseDbms {
       await trx.table(tableName).where('id', migration.id).delete();
     });
   };
+
+  close = async () => {
+    await this.knex.destroy();
+  };
 }
