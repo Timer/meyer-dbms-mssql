@@ -1,84 +1,83 @@
-import Meyer from 'meyer'
-import MssqlDbms from '../src'
-import path from 'path'
-import Mssql from 'mssql'
+import Knex, { MsSqlConnectionConfig } from 'knex';
+import Meyer from 'meyer';
+import path from 'path';
+import MssqlDbms from '../src';
 
-const config = {
+const config: MsSqlConnectionConfig = {
   server: 'localhost',
   port: 26042,
   user: 'sa',
-  password: 'Meyer#123'
-}
-const dbms = new MssqlDbms({ ...config, database: 'Testing' })
+  password: 'Meyer#123',
+  database: 'Testing',
+};
+const dbms = new MssqlDbms(config);
 
-let pool: Mssql.ConnectionPool
+let setupKnex: Knex;
+let testingKnex: Knex;
 beforeAll(async () => {
-  pool = new Mssql.ConnectionPool({
-    ...config,
-    pool: { min: 0, max: 1, idleTimeoutMillis: 1 }
-  } as Mssql.config)
-  await pool.connect()
-  await pool.query`DROP DATABASE IF EXISTS Testing; CREATE DATABASE Testing;`
-  await pool.close()
+  setupKnex = Knex({
+    client: 'mssql',
+    connection: { ...config, database: 'master' } as MsSqlConnectionConfig,
+  });
+  await setupKnex.raw(
+    `DROP DATABASE IF EXISTS Testing; CREATE DATABASE Testing;`
+  );
 
-  pool = new Mssql.ConnectionPool({
-    ...config,
-    database: 'Testing',
-    pool: { min: 0, max: 1, idleTimeoutMillis: 1 }
-  } as Mssql.config)
-  await pool.connect()
-})
+  testingKnex = Knex({ client: 'mssql', connection: config });
+});
 
 afterAll(async () => {
-  await pool.close()
-})
+  if (setupKnex) await setupKnex.destroy();
+  if (testingKnex) await testingKnex.destroy();
+});
 
 describe('MSSQL Provider', () => {
   test('it runs migrations v1', async () => {
     const m = new Meyer({
       dbms,
-      migrationsPath: path.resolve(__dirname, 'migrations-v1')
-    })
-    await m.execute()
+      migrationsPath: path.resolve(__dirname, 'migrations-v1'),
+    });
+    await m.execute();
 
-    expect((await pool.query`SELECT * FROM abc;`).recordset).toMatchSnapshot()
-  })
+    expect(await testingKnex.raw(`SELECT * FROM abc;`)).toMatchSnapshot();
+  });
   test('it runs migrations v2', async () => {
     const m = new Meyer({
       dbms,
-      migrationsPath: path.resolve(__dirname, 'migrations-v2')
-    })
-    await m.execute()
-    expect((await pool.query`SELECT * FROM abc;`).recordset).toMatchSnapshot()
-    expect((await pool.query`SELECT * FROM def;`).recordset).toMatchSnapshot()
-  })
+      migrationsPath: path.resolve(__dirname, 'migrations-v2'),
+    });
+    await m.execute();
+    expect(await testingKnex.raw(`SELECT * FROM abc;`)).toMatchSnapshot();
+    expect(await testingKnex.raw(`SELECT * FROM def;`)).toMatchSnapshot();
+  });
   test('it fails migrations v3 in prod', async () => {
     const m = new Meyer({
       dbms,
-      migrationsPath: path.resolve(__dirname, 'migrations-v3')
-    })
-    let err
+      migrationsPath: path.resolve(__dirname, 'migrations-v3'),
+    });
+    let err;
     try {
-      await m.execute()
+      await m.execute();
     } catch (e) {
-      err = e
+      err = e;
     }
-    expect(err).toMatchSnapshot()
-    expect((await pool.query`SELECT * FROM abc;`).recordset).toMatchSnapshot()
-    expect((await pool.query`SELECT * FROM def;`).recordset).toMatchSnapshot()
-  })
+    expect(err).toMatchSnapshot();
+    expect(await testingKnex.raw(`SELECT * FROM abc;`)).toMatchSnapshot();
+    expect(await testingKnex.raw(`SELECT * FROM def;`)).toMatchSnapshot();
+  });
   test('it runs migrations v3 in dev', async () => {
     const m = new Meyer({
       dbms,
       migrationsPath: path.resolve(__dirname, 'migrations-v3'),
-      development: true
-    })
-    await m.execute()
-    expect((await pool.query`SELECT * FROM abc;`).recordset).toMatchSnapshot()
-    expect((await pool.query`SELECT * FROM jow;`).recordset).toMatchSnapshot()
+      development: true,
+    });
+    await m.execute();
+    expect(await testingKnex.raw(`SELECT * FROM abc;`)).toMatchSnapshot();
+    expect(await testingKnex.raw(`SELECT * FROM jow;`)).toMatchSnapshot();
     expect(
-      (await pool.query`IF OBJECT_ID (N'def', N'U') IS NOT NULL SELECT 1 AS [exists] ELSE SELECT 0 AS [exists];`)
-        .recordset
-    ).toMatchObject([{ exists: 0 }])
-  })
-})
+      await testingKnex.raw(
+        `IF OBJECT_ID (N'def', N'U') IS NOT NULL SELECT 1 AS [exists] ELSE SELECT 0 AS [exists];`
+      )
+    ).toMatchObject([{ exists: 0 }]);
+  });
+});
