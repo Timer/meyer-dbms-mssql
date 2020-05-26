@@ -6499,10 +6499,10 @@ merge@^1.2.1:
   resolved "https://registry.yarnpkg.com/merge/-/merge-1.2.1.tgz#38bebf80c3220a8a487b6fcfb3941bb11720c145"
   integrity sha512-VjFo4P5Whtj4vsLzsYBu5ayHhoHJ0UqNm7ibvShmbmoz7tGi0vXaoJbGdB+GmDMLUdg8DpQXEIeVDAe8MaABvQ==
 
-meyer@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/meyer/-/meyer-1.2.1.tgz#b6125c9db90b32373e0478e3d343bfecbe302527"
-  integrity sha512-GSpmVwa6xuh59BgVTxoDk/hoAlxU9bnRczpSOL8s/22F/5p5YSiqrhmxfWKao0iiIbYyxA94zoIvo0vifMof1A==
+meyer@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/meyer/-/meyer-1.2.2.tgz#498d064e5842d9c803e30bc95bc112dd55230a42"
+  integrity sha512-5Sf3pxXyNb/pRwS3VzD4iYE6CZ1UcBWI+ZMQ5ibcyi/KZLWg3WoYAOJArLDnTJ3IBNcmU04rsPiyNZg/kOnWsg==
   dependencies:
     debug "^4.1.0"
     eol "^0.9.1"

@@ -29,6 +29,7 @@ beforeAll(async () => {
 afterAll(async () => {
   if (setupKnex) await setupKnex.destroy();
   if (testingKnex) await testingKnex.destroy();
+  await dbms.close();
 });
 
 describe('MSSQL Provider', () => {
