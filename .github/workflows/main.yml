@@ -35,6 +35,7 @@ jobs:
         run: |
           docker-compose up -d
           yarn test --ci --coverage --maxWorkers=2
+          docker-compose down --volumes --remove-orphans
         env:
           CI: true
 
