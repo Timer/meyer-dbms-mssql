@@ -31,11 +31,10 @@ jobs:
         env:
           CI: true
 
-      - name: Setup testing env ...
-        run: docker-compose up -d
-
       - name: Test
-        run: yarn test --ci --coverage --maxWorkers=2
+        run: |
+          docker-compose up -d
+          yarn test --ci --coverage --maxWorkers=2
         env:
           CI: true
 
