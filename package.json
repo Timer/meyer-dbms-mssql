@@ -24,7 +24,7 @@
     "commit": "git-cz"
   },
   "dependencies": {
-    "knex": "^0.21.1",
+    "knex": "^2.4.0",
     "mssql": "^6.2.0"
   },
   "peerDependencies": {
